@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2012-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,10 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Oliver Gierke
  */
 @Configuration
-// TODO-03.01: Enable component scanning to pick up OrderInitializer
-// TODO-02.02: Enable JPA repositories
+// TODO-01.00: ---- Basic infrastructure ----
 // TODO-01.04: Activate annotation driven transactions
+// TODO-02.02: Enable JPA repositories
+// TODO-03.01: Enable component scanning to pick up OrderInitializer
 class ApplicationConfig {
 
 	/**
