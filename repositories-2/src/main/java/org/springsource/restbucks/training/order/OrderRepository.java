@@ -17,6 +17,7 @@ package org.springsource.restbucks.training.order;
 
 import java.util.List;
 
+import org.springframework.data.querydsl.QueryDslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springsource.restbucks.training.order.Order.Status;
@@ -26,7 +27,14 @@ import org.springsource.restbucks.training.order.Order.Status;
  * 
  * @author Oliver Gierke
  */
-public interface OrderRepository extends CrudRepository<Order, Long> {
+// TODO-01.00: ---- Pagination ----
+// TODO-01.01: Enable PagingAndSortingRepository
+// TODO-02.00: ---- Querydsl ----
+// TODO-02.01: Enable Querydsl (pom.xml)
+// TODO-02.02: Enable predicate execution
+// TODO-03.00: ---- Custom implementation ----
+// TODO-03.01: Create custom interface and implementation
+public interface OrderRepository extends QueryDslPredicateExecutor<Order>, CrudRepository<Order, Long> {
 
 	/**
 	 * Returns all {@link Order}s with the given {@link Status}.
