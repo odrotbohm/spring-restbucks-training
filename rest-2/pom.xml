@@ -12,7 +12,7 @@
 	</parent>
 
 	<artifactId>rest-2</artifactId>
-	<name>Spring Data REST - Introduction</name>
+	<name>Spring Data REST - Advanced</name>
 	
 	<properties>
 		<jackson>2.1.4</jackson>
@@ -24,6 +24,19 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${spring}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.7.2</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
@@ -51,7 +64,6 @@
 			<artifactId>jackson-datatype-joda</artifactId>
 			<version>2.1.2</version>
 		</dependency>
-
 		
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
@@ -65,9 +77,9 @@
 		<defaultGoal>jetty:run</defaultGoal>
 		<plugins>
 			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
+				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
-				<version>8.1.9.v20130131</version>
+				<version>9.0.2.v20130417</version>
 			</plugin>
 		</plugins>
 	</build>
