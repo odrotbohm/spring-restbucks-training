@@ -15,7 +15,7 @@
  */
 package org.springsource.restbucks.training.order.web;
 
-import org.springframework.data.rest.repository.context.AbstractRepositoryEventListener;
+import org.springframework.data.rest.core.event.AbstractRepositoryEventListener;
 import org.springsource.restbucks.training.order.Order;
 
 /**
