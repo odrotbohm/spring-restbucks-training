@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.repository.annotation.RestResource;
 import org.springsource.restbucks.training.order.Order.Status;
 
 /**
@@ -27,7 +26,6 @@ import org.springsource.restbucks.training.order.Order.Status;
  * 
  * @author Oliver Gierke
  */
-@RestResource(path = "orders", rel = "orders")
 public interface OrderRepository extends CrudRepository<Order, Long> {
 
 	/**
