@@ -15,46 +15,43 @@
  */
 package org.springsource.restbucks.training.order.web;
 
+import net.minidev.json.parser.JSONParser;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springsource.restbucks.training.AbstractWebIntegrationTest;
 
 /**
  * @author Oliver Gierke
  */
-// TODO-03.00: ---- General web test setup ----
-// TODO-04.00: ---- Define web tests ----
+// TODO-02.00: ---- General web test setup ----
+// TODO-03.00: ---- Define web tests ----
 @Ignore
 public class OrderResourceIntegrationTest extends AbstractWebIntegrationTest {
 
-	@Autowired
-	WebApplicationContext context;
+	@Autowired WebApplicationContext context;
 
-	MockMvc mvc;
+	JSONParser parser;
 
 	@Before
+	@Override
 	public void setUp() {
-
-		OpenEntityManagerInViewFilter oemivFilter = new OpenEntityManagerInViewFilter();
-		oemivFilter.setServletContext(context.getServletContext());
-
-		mvc = MockMvcBuilders.webAppContextSetup(context). // TODO-03.02: Set up MockMvc
-				addFilter(oemivFilter). // TODO-03.03: Add OEMIV
-				build();
+		parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
 	}
 
 	@Test
 	public void exposesOrdersResourceViaRootResource() throws Exception {
 
-		// TODO-04.01: Perform GET request
-		// TODO-04.02: Assert 200
-		// TODO-04.03: Assert media type
-		// TODO-04.04: Assert order link present
+		// TODO-03.01: Perform GET request
+		// mvc.perform(get("/")).//
+		// TODO-03.02: Assert 200
+		// andExpect(status().isOk()). //
+		// TODO-03.03: Assert media type
+		// andExpect(content().contentType(MediaTypes.HAL_JSON)). //
+		// TODO-03.04: Assert order link present
+		// andExpect(jsonPath("$_links.orders.href", notNullValue()));
 	}
 }

@@ -20,25 +20,22 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
 import org.springsource.restbucks.training.AbstractIntegrationTest;
 import org.springsource.restbucks.training.order.Order;
 import org.springsource.restbucks.training.order.TestUtils;
-import org.springsource.restbucks.training.payment.PaymentAspectIntegrationTests.AdditionalConfig;
 
 /**
  * @author Oliver Gierke
  */
-@ContextConfiguration(classes = AdditionalConfig.class)
+@SpringApplicationConfiguration(classes = PaymentAspectIntegrationTests.AdditionalConfig.class)
 public class PaymentAspectIntegrationTests extends AbstractIntegrationTest {
 
-	@Autowired
-	PaymentService paymentService;
-	@Autowired
-	TestApplicationListener listener;
+	@Autowired PaymentService paymentService;
+	@Autowired TestApplicationListener listener;
 
 	@Configuration
 	static class AdditionalConfig {

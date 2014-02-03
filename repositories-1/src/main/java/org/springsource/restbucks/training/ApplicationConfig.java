@@ -18,9 +18,7 @@ package org.springsource.restbucks.training;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
@@ -31,41 +29,9 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 @Configuration
 // TODO-01.00: ---- Basic infrastructure ----
-// TODO-01.04: Activate annotation driven transactions
+// TODO-01.01: Enable Spring Boot's auto-configuration
 // TODO-02.02: Enable JPA repositories
 // TODO-03.01: Enable component scanning to pick up OrderInitializer
 class ApplicationConfig {
 
-	/**
-	 * Bootstraps an in-memory HSQL database.
-	 * 
-	 * @return
-	 * @see http 
-	 *      ://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/jdbc.html#jdbc-embedded-database
-	 *      -support
-	 */
-	@Bean
-	public DataSource dataSource() {
-		// TODO-01.01: Declare HSQL DataSource using Spring's embedded database builder API
-		return null;
-	}
-
-	/**
-	 * Sets up a {@link LocalContainerEntityManagerFactoryBean} to use Hibernate. Activates picking up entities from the
-	 * project's base package.
-	 * 
-	 * @return
-	 */
-	@Bean
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-		// TODO-01.02: Configure EntityManagerFactoryBean for Hibernate
-		return null;
-	}
-
-	@Bean
-	public PlatformTransactionManager transactionManager() {
-
-		// TODO-01.03: Configure PlatformTransactionManager
-		return null;
-	}
 }

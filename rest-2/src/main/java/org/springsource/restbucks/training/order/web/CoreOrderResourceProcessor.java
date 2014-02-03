@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceProcessor;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springsource.restbucks.training.order.Order;
 
@@ -29,7 +28,9 @@ import org.springsource.restbucks.training.order.Order;
  * 
  * @author Oliver Gierke
  */
-@Component
+// TODO-01.00: ---- Enhance Orders with update and cancel links ----
+// TODO-01.01: Register ResourceProcessor to extend orders
+// @Component
 class CoreOrderResourceProcessor implements ResourceProcessor<Resource<Order>> {
 
 	public static final String CANCEL_REL = "cancel";

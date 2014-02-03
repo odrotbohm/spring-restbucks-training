@@ -23,8 +23,8 @@ import org.springsource.restbucks.training.order.Order;
  * 
  * @author Oliver Gierke
  */
-// TODO-04.00: ---- Spring Data REST event listeners ----
-// TODO-04.01: Enable event listener
+// TODO-05.00: ---- Spring Data REST event listeners ----
+// TODO-05.01: Enable event listener
 // @Component
 @SuppressWarnings("rawtypes")
 class OrderControllerEventListener extends AbstractRepositoryEventListener {

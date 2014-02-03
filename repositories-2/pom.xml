@@ -14,7 +14,7 @@
 	<name>Spring Data Repositories - Advanced</name>
 	
 	<properties>
-		<querydsl>2.9.0</querydsl>
+		<querydsl>3.3.0</querydsl>
 	</properties>
 	
 	<dependencies>
@@ -22,6 +22,12 @@
 			<groupId>com.mysema.querydsl</groupId>
 			<artifactId>querydsl-jpa</artifactId>
 			<version>${querydsl}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.hibernate.javax.persistence</groupId>
+					<artifactId>hibernate-jpa-2.0-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 	
@@ -30,7 +36,7 @@
 			<plugin>
 				<groupId>com.mysema.maven</groupId>
 				<artifactId>apt-maven-plugin</artifactId>
-				<version>1.0.9</version>
+				<version>1.1.1</version>
 				<dependencies>
 					<dependency>
 						<groupId>com.mysema.querydsl</groupId>
@@ -45,7 +51,7 @@
 							<goal>process</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>target/generated-sources</outputDirectory>
+							<outputDirectory>target/generated-sources/annotations</outputDirectory>
 							<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
 						</configuration>
 					</execution>

@@ -35,7 +35,7 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
  */
 public class CreditCardMarshallingTest {
 
-	static final String REFERENCE = "{\"number\":\"1234123412341234\",\"cardHolderName\":\"Oliver Gierke\",\"expirationDate\":[2013,11,1]}";
+	static final String REFERENCE = "{\"number\":\"1234123412341234\",\"expirationDate\":[2013,11,1],\"cardHolderName\":\"Oliver Gierke\"}";
 
 	ObjectMapper mapper = new ObjectMapper();
 

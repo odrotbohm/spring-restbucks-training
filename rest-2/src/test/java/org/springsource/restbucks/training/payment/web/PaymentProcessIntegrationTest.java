@@ -24,27 +24,18 @@ import java.nio.file.Files;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkDiscoverer;
-import org.springframework.hateoas.core.DefaultLinkDiscoverer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.ShallowEtagHeaderFilter;
 import org.springsource.restbucks.training.AbstractWebIntegrationTest;
+import org.springsource.restbucks.training.Restbucks;
 import org.springsource.restbucks.training.order.Order;
 
 import com.jayway.jsonpath.JsonPath;
@@ -61,37 +52,14 @@ import com.jayway.jsonpath.JsonPath;
 @Ignore
 public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 
-	private static final String FIRST_ORDER_EXPRESSION = "$content[0]";
+	private static final String FIRST_ORDER_EXPRESSION = "$_embedded.orders[0]";
 
-	private static final String ORDERS_REL = "orders";
-	private static final String ORDER_REL = ORDERS_REL + ".order";
-	private static final String RECEIPT_REL = "receipt";
-	private static final String CANCEL_REL = "cancel";
-	private static final String UPDATE_REL = "update";
-	private static final String PAYMENT_REL = "payment";
-
-	@Autowired
-	WebApplicationContext context;
-
-	// TODO-00.02: Autowire LinkDiscoverer
-	LinkDiscoverer links;
-
-	MockMvc mvc;
-
-	@Before
-	public void setUp() {
-
-		OpenEntityManagerInViewFilter oemivFilter = new OpenEntityManagerInViewFilter();
-		oemivFilter.setServletContext(context.getServletContext());
-
-		mvc = MockMvcBuilders.webAppContextSetup(context). //
-				addFilter(new ShallowEtagHeaderFilter()). //
-				addFilter(oemivFilter). //
-				build();
-
-		// TODO-00.02: Autowire LinkDiscoverer
-		links = new DefaultLinkDiscoverer();
-	}
+	private static final String ORDERS_REL = Restbucks.CURIE_NAMESPACE + ":orders";
+	private static final String ORDER_REL = Restbucks.CURIE_NAMESPACE + ":order";
+	private static final String RECEIPT_REL = Restbucks.CURIE_NAMESPACE + ":receipt";
+	private static final String CANCEL_REL = Restbucks.CURIE_NAMESPACE + ":cancel";
+	private static final String UPDATE_REL = Restbucks.CURIE_NAMESPACE + ":update";
+	private static final String PAYMENT_REL = Restbucks.CURIE_NAMESPACE + ":payment";
 
 	/**
 	 * Processes the first existing {@link Order} found.
@@ -168,13 +136,14 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 	private MockHttpServletResponse createNewOrder(MockHttpServletResponse source) throws Exception {
 
 		String content = source.getContentAsString();
-		Link ordersLink = links.findLinkWithRel(ORDERS_REL, content);
+
+		Link ordersLink = getDiscovererFor(source).findLinkWithRel(ORDERS_REL, content);
 
 		ClassPathResource resource = new ClassPathResource("order.json");
 		byte[] data = Files.readAllBytes(resource.getFile().toPath());
 
 		MockHttpServletResponse result = mvc
-				.perform(post(ordersLink.getHref()).contentType(MediaType.APPLICATION_JSON).content(data)). //
+				.perform(post(ordersLink.expand().getHref()).contentType(MediaType.APPLICATION_JSON).content(data)). //
 				andExpect(status().isCreated()). //
 				andExpect(header().string("Location", is(notNullValue()))). //
 				andReturn().getResponse();
@@ -192,12 +161,12 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 	private MockHttpServletResponse discoverOrdersResource(MockHttpServletResponse source) throws Exception {
 
 		String content = source.getContentAsString();
-		Link ordersLink = links.findLinkWithRel(ORDERS_REL, content);
+		Link ordersLink = getDiscovererFor(source).findLinkWithRel(ORDERS_REL, content);
 
 		log.info("Root resource returned: " + content);
 		log.info(String.format("Found orders link pointing to %s… Following…", ordersLink));
 
-		MockHttpServletResponse response = mvc.perform(get(ordersLink.getHref())). //
+		MockHttpServletResponse response = mvc.perform(get(ordersLink.expand().getHref())). //
 				andExpect(status().isOk()). //
 				andReturn().getResponse();
 
@@ -218,15 +187,16 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 
 		String content = source.getContentAsString();
 		String order = JsonPath.read(content, FIRST_ORDER_EXPRESSION).toString();
-		Link orderLink = links.findLinkWithRel("self", order);
+		Link orderLink = getDiscovererFor(source).findLinkWithRel("self", order);
 
 		log.info(String.format("Picking first order using JSONPath expression %s…", FIRST_ORDER_EXPRESSION));
 		log.info(String.format("Discovered self link pointing to %s… Following", orderLink));
 
 		return mvc.perform(get(orderLink.getHref())). //
-				andExpect(linkWithRelIsPresent("self")). //
+				andExpect(linkWithRelIsPresent(Link.REL_SELF)). //
 				andExpect(linkWithRelIsPresent(CANCEL_REL)). //
-				andExpect(linkWithRelIsPresent(UPDATE_REL)).andExpect(linkWithRelIsPresent(PAYMENT_REL)).//
+				andExpect(linkWithRelIsPresent(UPDATE_REL)). //
+				andExpect(linkWithRelIsPresent(PAYMENT_REL)).//
 				andReturn().getResponse();
 	}
 
@@ -242,7 +212,8 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 	private MockHttpServletResponse triggerPayment(MockHttpServletResponse response) throws Exception {
 
 		String content = response.getContentAsString();
-		Link paymentLink = links.findLinkWithRel(PAYMENT_REL, content);
+		LinkDiscoverer discoverer = getDiscovererFor(response);
+		Link paymentLink = discoverer.findLinkWithRel(PAYMENT_REL, content);
 
 		log.info(String.format("Discovered payment link pointing to %s…", paymentLink));
 
@@ -261,8 +232,8 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 
 		// Make sure we cannot cheat and cancel the order after it has been payed
 		log.info("Faking a cancel request to make sure it's forbidden…");
-		Link selfLink = links.findLinkWithRel(Link.REL_SELF, content);
-		mvc.perform(get(selfLink.getHref() + "/cancel")).andExpect(status().isNotFound());
+		Link selfLink = discoverer.findLinkWithRel(Link.REL_SELF, content);
+		mvc.perform(delete(selfLink.getHref())).andExpect(status().isMethodNotAllowed());
 
 		return result;
 	}
@@ -279,7 +250,8 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 
 		// Grab
 		String content = response.getContentAsString();
-		Link orderLink = links.findLinkWithRel(ORDER_REL, content);
+		LinkDiscoverer discoverer = getDiscovererFor(response);
+		Link orderLink = discoverer.findLinkWithRel(ORDER_REL, content);
 
 		// Poll order until receipt link is set
 		Link receiptLink = null;
@@ -309,7 +281,7 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 						andExpect(linkWithRelIsNotPresent(UPDATE_REL)). //
 						andExpect(linkWithRelIsNotPresent(CANCEL_REL));
 
-				receiptLink = links.findLinkWithRel(RECEIPT_REL, pollResponse.getContentAsString());
+				receiptLink = discoverer.findLinkWithRel(RECEIPT_REL, pollResponse.getContentAsString());
 
 			} else if (status == HttpStatus.NO_CONTENT.value()) {
 				action.andExpect(content().string(isEmptyOrNullString()));
@@ -334,17 +306,16 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 	 */
 	private MockHttpServletResponse takeReceipt(MockHttpServletResponse response) throws Exception {
 
-		Link receiptLink = links.findLinkWithRel(RECEIPT_REL, response.getContentAsString());
+		Link receiptLink = getDiscovererFor(response).findLinkWithRel(RECEIPT_REL, response.getContentAsString());
 
-		MockHttpServletResponse receiptResponse = mvc.perform(get(receiptLink.getHref()). //
-				accept(MediaType.APPLICATION_JSON)). //
+		MockHttpServletResponse receiptResponse = mvc.perform(get(receiptLink.getHref())). //
 				andExpect(status().isOk()). //
 				andReturn().getResponse();
 
 		log.info("Accessing receipt, got:" + receiptResponse.getContentAsString());
 		log.info("Taking receipt…");
 
-		return mvc.perform(delete(receiptLink.getHref()).accept(MediaType.APPLICATION_JSON)). //
+		return mvc.perform(delete(receiptLink.getHref())). //
 				andExpect(status().isOk()). //
 				andReturn().getResponse();
 	}
@@ -358,7 +329,7 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 	 */
 	private void verifyOrderTaken(MockHttpServletResponse response) throws Exception {
 
-		Link orderLink = links.findLinkWithRel(ORDER_REL, response.getContentAsString());
+		Link orderLink = getDiscovererFor(response).findLinkWithRel(ORDER_REL, response.getContentAsString());
 		MockHttpServletResponse orderResponse = mvc.perform(get(orderLink.getHref())). //
 				andExpect(status().isOk()). // //
 				andExpect(linkWithRelIsPresent(Link.REL_SELF)). //
@@ -381,54 +352,11 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 
 		String content = response.getContentAsString();
 
-		Link selfLink = links.findLinkWithRel(Link.REL_SELF, content);
-		Link cancellationLink = links.findLinkWithRel(CANCEL_REL, content);
+		LinkDiscoverer discoverer = getDiscovererFor(response);
+		Link selfLink = discoverer.findLinkWithRel(Link.REL_SELF, content);
+		Link cancellationLink = discoverer.findLinkWithRel(CANCEL_REL, content);
 
 		mvc.perform(delete(cancellationLink.getHref())).andExpect(status().isNoContent());
 		mvc.perform(get(selfLink.getHref())).andExpect(status().isNotFound());
-	}
-
-	// Helper methods
-
-	/**
-	 * Creates a {@link ResultMatcher} that checks for the presence of a link with the given rel.
-	 * 
-	 * @param rel
-	 * @return
-	 */
-	private ResultMatcher linkWithRelIsPresent(final String rel) {
-		return new LinkWithRelMatcher(rel, true);
-	}
-
-	/**
-	 * Creates a {@link ResultMatcher} that checks for the non-presence of a link with the given rel.
-	 * 
-	 * @param rel
-	 * @return
-	 */
-	private ResultMatcher linkWithRelIsNotPresent(String rel) {
-		return new LinkWithRelMatcher(rel, false);
-	}
-
-	private class LinkWithRelMatcher implements ResultMatcher {
-
-		private final String rel;
-		private final boolean present;
-
-		public LinkWithRelMatcher(String rel, boolean present) {
-			this.rel = rel;
-			this.present = present;
-		}
-
-		/* 
-		 * (non-Javadoc)
-		 * @see org.springframework.test.web.servlet.ResultMatcher#match(org.springframework.test.web.servlet.MvcResult)
-		 */
-		@Override
-		public void match(MvcResult result) throws Exception {
-
-			String content = result.getResponse().getContentAsString();
-			assertThat(links.findLinkWithRel(rel, content), is(present ? notNullValue() : nullValue()));
-		}
 	}
 }

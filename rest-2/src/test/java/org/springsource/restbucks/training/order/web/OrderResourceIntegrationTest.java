@@ -23,12 +23,8 @@ import net.minidev.json.parser.JSONParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.ShallowEtagHeaderFilter;
 import org.springsource.restbucks.training.AbstractWebIntegrationTest;
 
 /**
@@ -38,23 +34,15 @@ import org.springsource.restbucks.training.AbstractWebIntegrationTest;
  */
 public class OrderResourceIntegrationTest extends AbstractWebIntegrationTest {
 
-	@Autowired
-	WebApplicationContext context;
+	@Autowired WebApplicationContext context;
 
-	MockMvc mvc;
 	JSONParser parser;
 
 	@Before
+	@Override
 	public void setUp() {
 
-		OpenEntityManagerInViewFilter oemivFilter = new OpenEntityManagerInViewFilter();
-		oemivFilter.setServletContext(context.getServletContext());
-
-		mvc = MockMvcBuilders.webAppContextSetup(context). //
-				addFilter(new ShallowEtagHeaderFilter()). //
-				addFilter(oemivFilter). //
-				build();
-
+		super.setUp();
 		parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
 	}
 
@@ -63,7 +51,7 @@ public class OrderResourceIntegrationTest extends AbstractWebIntegrationTest {
 
 		mvc.perform(get("/")).//
 				andExpect(status().isOk()). //
-				andExpect(content().contentType(MediaType.APPLICATION_JSON)). //
-				andExpect(jsonPath("$links[?(@.rel == 'order')].href", notNullValue()));
+				andExpect(content().contentType(MediaTypes.HAL_JSON)). //
+				andExpect(jsonPath("$_links.orders.href", notNullValue()));
 	}
 }

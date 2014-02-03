@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,25 +15,20 @@
  */
 package org.springsource.restbucks.training;
 
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 /**
- * Spring JavaConfig configuration class to setup a Spring container and infrastructure components like a
- * {@link DataSource}, a {@link EntityManagerFactory} and a {@link PlatformTransactionManager}.
+ * Web layer configuration enabling Spring MVC, Spring Hateoas hypermedia support.
  * 
  * @author Oliver Gierke
  */
 @Configuration
-@ComponentScan
-@EnableAutoConfiguration
-@EnableJpaRepositories
-class ApplicationConfig {
+// TODO-01.00: ---- Enable web application ---
+// TODO-01.01: Add Restbucks class with main-method
+// TODO-01.02: Activate Spring Data REST
+// @Import({ ApplicationConfig.class, RepositoryRestMvcConfiguration.class })
+// @ComponentScan(excludeFilters = @Filter({ Service.class, Configuration.class }))
+class WebConfiguration extends WebMvcConfigurationSupport {
 
 }

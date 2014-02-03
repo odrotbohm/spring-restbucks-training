@@ -25,9 +25,8 @@ import org.springsource.restbucks.training.payment.Payment.Receipt;
  * 
  * @author Oliver Gierke
  */
-// TODO-01.02: Enable PaymentLinks
-// TODO-02.00: ---- Using EntityLinks ----
-// TODO-02.01: Use EntityLinks
+// TODO-02.03: Enable PaymentLinks
+// TODO-02.04: Inject EntityLinks
 public class PaymentLinks {
 
 	static final String PAYMENT = "/payment";
@@ -43,8 +42,7 @@ public class PaymentLinks {
 	 */
 	Link getPaymentLink(Order order) {
 
-		// TODO-01.03: Implement link using ControllerLinkBuilder
-		// TODO-02.02: Implement link using EntityLinks
+		// TODO-02.05: Implement link using EntityLinks
 		return null;
 	}
 
@@ -56,8 +54,7 @@ public class PaymentLinks {
 	 */
 	Link getReceiptLink(Order order) {
 
-		// TODO-01.03: Implement link using ControllerLinkBuilder
-		// TODO-02.02: Implement link using EntityLinks
+		// TODO-02.06: Implement link using EntityLinks
 		return null;
 	}
 }

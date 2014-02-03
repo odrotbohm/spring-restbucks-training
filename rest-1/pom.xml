@@ -13,45 +13,24 @@
 
 	<artifactId>rest-1</artifactId>
 	<name>Spring Data REST - Introduction</name>
-	
-	<properties>
-		<jackson>2.1.4</jackson>
-	</properties>
 
 	<dependencies>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>${spring}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
-			<scope>provided</scope>
-		</dependency>
-
+	
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-rest-webmvc</artifactId>
-			<version>${spring-data-rest}</version>
+			<version>${spring-data-rest.version}</version>
 		</dependency>
 		
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>${jackson}</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		
-		<!-- This is *not* a mistake. The latest Joda binding is in 2.1.2 
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-joda</artifactId>
-			<version>2.1.2</version>
 		</dependency>
-		-->
 		
 		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
@@ -60,16 +39,5 @@
 		</dependency>
 		
 	</dependencies>
-
-	<build>
-		<defaultGoal>jetty:run</defaultGoal>
-		<plugins>
-			<plugin>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>9.0.2.v20130417</version>
-			</plugin>
-		</plugins>
-	</build>
 
 </project>

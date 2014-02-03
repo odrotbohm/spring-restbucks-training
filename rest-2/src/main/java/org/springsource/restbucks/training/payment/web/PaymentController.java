@@ -45,10 +45,10 @@ import org.springsource.restbucks.training.payment.PaymentService;
  * 
  * @author Oliver Gierke
  */
-// TODO-03.00: ---- Enable payment functionality ----
-// TODO-03.01: Enable @Controller
+// TODO-02.00: ---- Enable payment functionality ----
+// TODO-02.01: Enable @Controller
 @RequestMapping("/orders/{id}")
-// TODO-03.02: Enable @ExposerResourceFor for Payment
+// TODO-02.02: Enable @ExposerResourceFor for Payment
 @ExposesResourceFor(Payment.class)
 public class PaymentController {
 

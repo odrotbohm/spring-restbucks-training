@@ -15,10 +15,11 @@
  */
 package org.springsource.restbucks.training.payment.web;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceProcessor;
-import org.springframework.util.Assert;
 import org.springsource.restbucks.training.order.Order;
 
 /**
@@ -26,23 +27,12 @@ import org.springsource.restbucks.training.order.Order;
  * 
  * @author Oliver Gierke
  */
-// TODO-01.00: ---- Enhancing order resources ----
-// TODO-01.01: Enable ResourceProcessor to add payment link
+// TODO-04.00: ---- Enhancing order resources to add payment functionality ----
+// TODO-04.01: Enable ResourceProcessor to add payment link
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 class PaymentOrderResourceProcessor implements ResourceProcessor<Resource<Order>> {
 
 	private final PaymentLinks paymentLinks;
-
-	/**
-	 * Creates a new {@link PaymentOrderResourceProcessor} from the given {@link PaymentController}.
-	 * 
-	 * @param paymentLinks must not be {@literal null}.
-	 */
-	@Autowired
-	public PaymentOrderResourceProcessor(PaymentLinks paymentLinks) {
-
-		Assert.notNull(paymentLinks, "PaymentLinks must not be null!");
-		this.paymentLinks = paymentLinks;
-	}
 
 	/* 
 	 * (non-Javadoc)
