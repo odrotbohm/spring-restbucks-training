@@ -17,7 +17,7 @@ package org.springsource.restbucks.training;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.SpringBootServletInitializer;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
 
 /**
  * Central application class containing both general application and web configuration as well as a main-method to
