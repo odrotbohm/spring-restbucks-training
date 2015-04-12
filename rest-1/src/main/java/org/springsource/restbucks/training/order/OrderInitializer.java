@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
  */
 package org.springsource.restbucks.training.order;
 
-import static org.springsource.restbucks.training.core.MonetaryAmount.*;
+import static org.springsource.restbucks.training.core.Currencies.*;
 
 import java.util.Arrays;
 
+import org.javamoney.moneta.Money;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springsource.restbucks.training.core.MonetaryAmount;
 
 /**
  * Initializer to set up two {@link Order}s.
@@ -42,8 +42,8 @@ class OrderInitializer {
 
 		Assert.notNull(orderRepository, "OrderRepository must not be null!");
 
-		Item javaChip = new Item("Java Chip", new MonetaryAmount(EURO, 4.20));
-		Item cappuchino = new Item("Cappuchino", new MonetaryAmount(EURO, 3.20));
+		Item javaChip = new Item("Java Chip", Money.of(4.20, EURO));
+		Item cappuchino = new Item("Cappuchino", Money.of(3.20, EURO));
 
 		Order javaChipOrder = new Order(javaChip);
 		Order cappuchinoOrder = new Order(cappuchino);

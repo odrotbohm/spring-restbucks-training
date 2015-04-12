@@ -18,24 +18,26 @@ package org.springsource.restbucks.training;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.stereotype.Service;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.orm.jpa.EntityScan;
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Spring JavaConfig configuration class to setup a Spring container and infrastructure components like a
  * {@link DataSource}, a {@link EntityManagerFactory} and a {@link PlatformTransactionManager}.
- * 
+ *
  * @author Oliver Gierke
  */
-@Configuration
-@ComponentScan(includeFilters = @Filter(Service.class), useDefaultFilters = false)
-@EnableAutoConfiguration
-@EnableJpaRepositories
-class ApplicationConfig {
+@SpringBootApplication
+@EntityScan(basePackageClasses = { Application.class, Jsr310JpaConverters.class })
+// TODO-01.00: ---- Enable web application ----
+// TODO-01.01: Add Spring Data REST starter
+// TODO-01.02: Add main method to run application
+class Application {
 
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
 }

@@ -17,35 +17,30 @@ package org.springsource.restbucks.training;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.ShallowEtagHeaderFilter;
 
 /**
  * Base class to derive concrete web test classes from.
  * 
  * @author Oliver Gierke
  */
-// TODO-02.01: Enable Spring web test framework with application and web configuration
+// TODO-03.01: Enable Spring web test framework with application and web configuration
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@SpringApplicationConfiguration(classes = WebConfiguration.class)
+// @WebAppConfiguration
+@SpringApplicationConfiguration(classes = Application.class)
 public abstract class AbstractWebIntegrationTest {
 
-	@Autowired WebApplicationContext context;
+	// @Autowired WebApplicationContext context;
 
 	protected MockMvc mvc;
 
 	@Before
 	public void setUp() {
 
-		mvc = MockMvcBuilders.webAppContextSetup(context). //
-				addFilter(new ShallowEtagHeaderFilter()). //
-				build();
+		// mvc = MockMvcBuilders.webAppContextSetup(context). //
+		// addFilter(new ShallowEtagHeaderFilter()). //
+		// build();
 	}
 }

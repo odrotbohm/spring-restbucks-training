@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package org.springsource.restbucks.training.order;
 
 import java.util.List;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springsource.restbucks.training.order.Order.Status;
 
@@ -26,7 +26,7 @@ import org.springsource.restbucks.training.order.Order.Status;
  * 
  * @author Oliver Gierke
  */
-public interface OrderRepository extends CrudRepository<Order, Long> {
+public interface OrderRepository extends PagingAndSortingRepository<Order, Long> {
 
 	/**
 	 * Returns all {@link Order}s with the given {@link Status}.
