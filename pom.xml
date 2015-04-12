@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.0.2.RELEASE</version>
+		<version>1.2.3.RELEASE</version>
 	</parent>
 
 	<modules>
@@ -26,13 +26,9 @@
 
 	<properties>
 
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-		<hibernate-entitymanager.version>4.3.4.Final</hibernate-entitymanager.version>
-		<logback.version>1.1.2</logback.version>
-		<spring.version>4.0.4.RELEASE</spring.version>
-		<spring-data-jpa.version>1.6.0.RC1</spring-data-jpa.version>
-		<spring-data-rest.version>2.1.0.RC1</spring-data-rest.version>
+		<java.version>1.8</java.version>
+		<spring-data-releasetrain.version>Gosling-BUILD-SNAPSHOT</spring-data-releasetrain.version>
+		<spring-hateoas.version>0.17.0.RELEASE</spring-hateoas.version>
 
 	</properties>
 
@@ -46,6 +42,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- HSQL -->
@@ -57,20 +54,15 @@
 
 		<!-- Common helpers -->
 		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.jadira.usertype</groupId>
-			<artifactId>usertype.core</artifactId>
-			<version>3.2.0.GA</version>
+			<groupId>org.javamoney</groupId>
+			<artifactId>moneta</artifactId>
+			<version>1.0-RC3</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.12.6</version>
+			<version>1.16.2</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -79,12 +71,8 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
