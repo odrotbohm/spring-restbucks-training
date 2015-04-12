@@ -24,14 +24,11 @@ import org.springframework.context.ApplicationContext;
  * 
  * @author Oliver Gierke
  */
-// TODO-02.03: Create test case to bootstrap repositories
+// TODO-02.02: Create test case to bootstrap repositories
 public class ApplicationIntegrationTest {
 
-	@Autowired
-	ApplicationContext context;
+	@Autowired ApplicationContext context;
 
 	@Test
-	public void initializesRootApplicationContext() {
-
-	}
+	public void initializesRootApplicationContext() {}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,16 @@
  */
 package org.springsource.restbucks.training;
 
-import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
-
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.PlatformTransactionManager;
 
 /**
- * Spring JavaConfig configuration class to setup a Spring container and infrastructure components like a
- * {@link DataSource}, a {@link EntityManagerFactory} and a {@link PlatformTransactionManager}.
+ * Core application configuration class.
  * 
  * @author Oliver Gierke
  */
 @Configuration
 // TODO-01.00: ---- Basic infrastructure ----
 // TODO-01.01: Enable Spring Boot's auto-configuration
-// TODO-02.02: Enable JPA repositories
 // TODO-03.01: Enable component scanning to pick up OrderInitializer
 class ApplicationConfig {
 

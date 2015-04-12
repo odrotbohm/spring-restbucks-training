@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springsource.restbucks.training.order;
+package org.springsource.restbucks.training.core;
+
+import javax.money.CurrencyUnit;
+import javax.money.MonetaryCurrencies;
 
 /**
- * Repository to manage {@link Order} instances.
+ * Interface to contain {@link CurrencyUnit} constants.
  * 
  * @author Oliver Gierke
  */
-// TODO-02.01: Turn repository into Spring Data repository
-public interface OrderRepository {
+public interface Currencies {
 
-	Order save(Iterable<Order> order);
-
-	// TODO-02.03: Declare finder to find Orders by status
+	public static final CurrencyUnit EURO = MonetaryCurrencies.getCurrency("EUR");
 }

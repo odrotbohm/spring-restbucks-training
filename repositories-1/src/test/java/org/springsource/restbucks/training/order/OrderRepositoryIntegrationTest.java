@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,11 @@
  */
 package org.springsource.restbucks.training.order;
 
-import static org.springsource.restbucks.training.core.MonetaryAmount.*;
-
+import org.javamoney.moneta.Money;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springsource.restbucks.training.AbstractIntegrationTest;
-import org.springsource.restbucks.training.core.MonetaryAmount;
 
 /**
  * Integration tests for Spring Data based {@link OrderRepository}.
@@ -31,8 +29,7 @@ import org.springsource.restbucks.training.core.MonetaryAmount;
 @Ignore
 public class OrderRepositoryIntegrationTest extends AbstractIntegrationTest {
 
-	@Autowired
-	OrderRepository repository;
+	@Autowired OrderRepository repository;
 
 	@Test
 	public void findsAllOrders() {
@@ -41,7 +38,7 @@ public class OrderRepositoryIntegrationTest extends AbstractIntegrationTest {
 
 	@Test
 	public void createsNewOrder() {
-		new Order(new Item("English breakfast", new MonetaryAmount(EURO, 2.70)));
+		new Order(new Item("English breakfast", Money.of(2.70, "EUR")));
 		// TODO-03.03: Implement test case
 	}
 

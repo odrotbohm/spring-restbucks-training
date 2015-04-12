@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
  */
 package org.springsource.restbucks.training.order;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.money.MonetaryAmount;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -29,10 +31,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import org.hibernate.annotations.Type;
-import org.joda.time.DateTime;
+import org.javamoney.moneta.Money;
 import org.springsource.restbucks.training.core.AbstractEntity;
-import org.springsource.restbucks.training.core.MonetaryAmount;
 
 @Entity
 @Getter
@@ -41,13 +41,12 @@ import org.springsource.restbucks.training.core.MonetaryAmount;
 @Table(name = "RBOrder")
 public class Order extends AbstractEntity {
 
-	private Location location;
+	private final Location location;
+	private final LocalDateTime orderedDate;
+
 	private Status status;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
-	private DateTime orderedDate;
-
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)//
 	private Set<Item> items = new HashSet<Item>();
 
 	/**
@@ -61,7 +60,7 @@ public class Order extends AbstractEntity {
 		this.location = location == null ? Location.TAKE_AWAY : location;
 		this.status = Status.PAYMENT_EXPECTED;
 		this.items.addAll(items);
-		this.orderedDate = new DateTime();
+		this.orderedDate = LocalDateTime.now();
 	}
 
 	/**
@@ -84,13 +83,9 @@ public class Order extends AbstractEntity {
 	 */
 	public MonetaryAmount getPrice() {
 
-		MonetaryAmount result = MonetaryAmount.ZERO;
-
-		for (Item item : items) {
-			result = result.add(item.getPrice());
-		}
-
-		return result;
+		return items.stream().//
+				map(Item::getPrice).//
+				reduce(MonetaryAmount::add).orElse(Money.of(0, "EUR"));
 	}
 
 	/**
