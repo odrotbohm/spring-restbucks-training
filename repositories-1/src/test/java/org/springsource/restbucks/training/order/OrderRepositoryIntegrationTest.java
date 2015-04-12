@@ -15,6 +15,8 @@
  */
 package org.springsource.restbucks.training.order;
 
+import static org.springsource.restbucks.training.core.Currencies.*;
+
 import org.javamoney.moneta.Money;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -38,12 +40,15 @@ public class OrderRepositoryIntegrationTest extends AbstractIntegrationTest {
 
 	@Test
 	public void createsNewOrder() {
-		new Order(new Item("English breakfast", Money.of(2.70, "EUR")));
 		// TODO-03.03: Implement test case
 	}
 
 	@Test
 	public void findsOrderByStatus() {
 		// TODO-03.04: Implement test case
+	}
+
+	public static Order createOrder() {
+		return new Order(new Item("English breakfast", Money.of(2.70, EURO)));
 	}
 }
