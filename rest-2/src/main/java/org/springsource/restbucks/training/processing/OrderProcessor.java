@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,54 +15,41 @@
  */
 package org.springsource.restbucks.training.processing;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.springsource.restbucks.training.order.Order;
 import org.springsource.restbucks.training.order.OrderRepository;
 import org.springsource.restbucks.training.payment.OrderPaidEvent;
 
 /**
  * Simple {@link ApplicationListener} implementation that listens to {@link OrderPaidEvent}s marking the according
- * {@link Order} as in process, sleeping for 10 seconds and marking the order as processed right after that.
+ * {@link Order} as in process, sleeping for 5 seconds and marking the order as processed right after that.
  * 
  * @author Oliver Gierke
  */
 @Slf4j
 @Service
-class OrderProcessor implements ApplicationListener<OrderPaidEvent> {
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+class OrderProcessor {
 
-	private final OrderRepository repository;
+	private final @NonNull OrderRepository repository;
 
-	/**
-	 * Creates a new {@link OrderProcessor} using the given {@link OrderRepository}.
-	 * 
-	 * @param repository must not be {@literal null}.
-	 */
-	@Autowired
-	public OrderProcessor(OrderRepository repository) {
-
-		Assert.notNull(repository, "OrderRepository must not be null!");
-		this.repository = repository;
-	}
-
-	/* 
-	 * (non-Javadoc)
-	 * @see org.springframework.context.ApplicationListener#onApplicationEvent(org.springframework.context.ApplicationEvent)
-	 */
 	@Async
-	@Override
-	public void onApplicationEvent(OrderPaidEvent event) {
+	@TransactionalEventListener
+	public void handleOrderPaidEvent(OrderPaidEvent event) {
 
 		Order order = repository.findOne(event.getOrderId());
 		order.markInPreparation();
 		order = repository.save(order);
 
-		log.info("Starting to process order {}.", order);
+		LOG.info("Starting to process order {}.", order);
 
 		try {
 			Thread.sleep(5000);
@@ -73,6 +60,7 @@ class OrderProcessor implements ApplicationListener<OrderPaidEvent> {
 		order.markPrepared();
 		repository.save(order);
 
-		log.info("Finished processing order {}.", order);
+		LOG.info("Finished processing order {}.", order);
 	}
+
 }

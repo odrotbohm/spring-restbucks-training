@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,12 @@
  */
 package org.springsource.restbucks.training.payment;
 
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
+
+import java.time.Month;
+import java.time.Year;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,6 +29,8 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springsource.restbucks.training.order.Order;
 import org.springsource.restbucks.training.order.OrderRepository;
 
@@ -39,29 +46,36 @@ public class PaymentServiceImplUnitTest {
 
 	PaymentService paymentService;
 
-	@Mock
-	PaymentRepository paymentRepository;
-	@Mock
-	CreditCardRepository creditCardRepository;
-	@Mock
-	OrderRepository orderRepository;
+	@Mock PaymentRepository paymentRepository;
+	@Mock CreditCardRepository creditCardRepository;
+	@Mock OrderRepository orderRepository;
+	@Mock ApplicationEventPublisher publisher;
 
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
+	@Rule public ExpectedException exception = ExpectedException.none();
 
 	@Before
 	public void setUp() {
-		this.paymentService = new PaymentServiceImpl(paymentRepository, creditCardRepository, orderRepository);
+		this.paymentService = new PaymentServiceImpl(creditCardRepository, paymentRepository, orderRepository, publisher);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsNullPaymentRepository() {
-		new PaymentServiceImpl(null, creditCardRepository, orderRepository);
+		new PaymentServiceImpl(creditCardRepository, null, orderRepository, publisher);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsNullCreditCardRepository() {
-		new PaymentServiceImpl(paymentRepository, null, orderRepository);
+		new PaymentServiceImpl(null, paymentRepository, orderRepository, publisher);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsNullOrderRepository() {
+		new PaymentServiceImpl(creditCardRepository, paymentRepository, null, publisher);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsNullEventPublisher() {
+		new PaymentServiceImpl(creditCardRepository, paymentRepository, orderRepository, null);
 	}
 
 	@Test
@@ -79,12 +93,26 @@ public class PaymentServiceImplUnitTest {
 	@Test
 	public void rejectsPaymentIfNoCreditCardFound() {
 
-		when(creditCardRepository.findByNumber(NUMBER)).thenReturn(null);
+		when(creditCardRepository.findByNumber(NUMBER)).thenReturn(Optional.empty());
 
 		exception.expect(PaymentException.class);
 		exception.expectMessage("credit card");
 		exception.expectMessage(NUMBER.getNumber());
 
 		paymentService.pay(new Order(), NUMBER);
+	}
+
+	@Test
+	public void throwsOrderPaidEventOnPayment() {
+
+		CreditCard creditCard = new CreditCard(NUMBER, "Oliver Gierke", Month.JANUARY, Year.of(2016));
+		when(creditCardRepository.findByNumber(NUMBER)).thenReturn(Optional.of(creditCard));
+
+		Order order = new Order();
+		ReflectionTestUtils.setField(order, "id", 1L);
+
+		paymentService.pay(order, NUMBER);
+
+		verify(publisher).publishEvent(any((OrderPaidEvent.class)));
 	}
 }

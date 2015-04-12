@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,19 @@
  */
 package org.springsource.restbucks.training.payment;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.Value;
 
-import org.hibernate.annotations.Type;
-import org.joda.time.DateTime;
 import org.springframework.util.Assert;
 import org.springsource.restbucks.training.core.AbstractEntity;
 import org.springsource.restbucks.training.order.Order;
@@ -41,14 +41,18 @@ import org.springsource.restbucks.training.order.Order;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Getter
 @ToString(callSuper = true)
-@NoArgsConstructor
 public abstract class Payment extends AbstractEntity {
 
-	@OneToOne(cascade = CascadeType.MERGE)
-	private Order order;
+	@JoinColumn(name = "rborder")//
+	@OneToOne(cascade = CascadeType.MERGE)//
+	private final Order order;
+	private final LocalDateTime paymentDate;
 
-	@Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
-	private DateTime paymentDate;
+	protected Payment() {
+
+		this.order = null;
+		this.paymentDate = null;
+	}
 
 	/**
 	 * Creates a new {@link Payment} referring to the given {@link Order}.
@@ -59,7 +63,7 @@ public abstract class Payment extends AbstractEntity {
 
 		Assert.notNull(order);
 		this.order = order;
-		this.paymentDate = new DateTime();
+		this.paymentDate = LocalDateTime.now();
 	}
 
 	/**
@@ -68,7 +72,7 @@ public abstract class Payment extends AbstractEntity {
 	 * @return
 	 */
 	public Receipt getReceipt() {
-		return new Receipt(order, paymentDate);
+		return new Receipt(paymentDate, order);
 	}
 
 	/**
@@ -76,10 +80,10 @@ public abstract class Payment extends AbstractEntity {
 	 * 
 	 * @author Oliver Gierke
 	 */
-	@Data
+	@Value
 	public static class Receipt {
 
+		private final LocalDateTime date;
 		private final Order order;
-		private final DateTime date;
 	}
 }

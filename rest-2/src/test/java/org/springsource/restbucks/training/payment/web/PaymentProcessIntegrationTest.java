@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springsource.restbucks.training.AbstractWebIntegrationTest;
-import org.springsource.restbucks.training.Restbucks;
+import org.springsource.restbucks.training.Application;
 import org.springsource.restbucks.training.order.Order;
 
 import com.jayway.jsonpath.JsonPath;
@@ -54,12 +54,12 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 
 	private static final String FIRST_ORDER_EXPRESSION = "$_embedded.orders[0]";
 
-	private static final String ORDERS_REL = Restbucks.CURIE_NAMESPACE + ":orders";
-	private static final String ORDER_REL = Restbucks.CURIE_NAMESPACE + ":order";
-	private static final String RECEIPT_REL = Restbucks.CURIE_NAMESPACE + ":receipt";
-	private static final String CANCEL_REL = Restbucks.CURIE_NAMESPACE + ":cancel";
-	private static final String UPDATE_REL = Restbucks.CURIE_NAMESPACE + ":update";
-	private static final String PAYMENT_REL = Restbucks.CURIE_NAMESPACE + ":payment";
+	private static final String ORDERS_REL = Application.CURIE_NAMESPACE + ":orders";
+	private static final String ORDER_REL = Application.CURIE_NAMESPACE + ":order";
+	private static final String RECEIPT_REL = Application.CURIE_NAMESPACE + ":receipt";
+	private static final String CANCEL_REL = Application.CURIE_NAMESPACE + ":cancel";
+	private static final String UPDATE_REL = Application.CURIE_NAMESPACE + ":update";
+	private static final String PAYMENT_REL = Application.CURIE_NAMESPACE + ":payment";
 
 	/**
 	 * Processes the first existing {@link Order} found.
@@ -114,7 +114,7 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 	 */
 	private MockHttpServletResponse accessRootResource() throws Exception {
 
-		log.info("Accessing root resource…");
+		LOG.info("Accessing root resource…");
 
 		MockHttpServletResponse response = mvc.perform(get("/")). //
 				andExpect(status().isOk()). //
@@ -163,14 +163,14 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 		String content = source.getContentAsString();
 		Link ordersLink = getDiscovererFor(source).findLinkWithRel(ORDERS_REL, content);
 
-		log.info("Root resource returned: " + content);
-		log.info(String.format("Found orders link pointing to %s… Following…", ordersLink));
+		LOG.info("Root resource returned: " + content);
+		LOG.info(String.format("Found orders link pointing to %s… Following…", ordersLink));
 
 		MockHttpServletResponse response = mvc.perform(get(ordersLink.expand().getHref())). //
 				andExpect(status().isOk()). //
 				andReturn().getResponse();
 
-		log.info("Found orders: " + response.getContentAsString());
+		LOG.info("Found orders: " + response.getContentAsString());
 		return response;
 	}
 
@@ -189,8 +189,8 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 		String order = JsonPath.read(content, FIRST_ORDER_EXPRESSION).toString();
 		Link orderLink = getDiscovererFor(source).findLinkWithRel("self", order);
 
-		log.info(String.format("Picking first order using JSONPath expression %s…", FIRST_ORDER_EXPRESSION));
-		log.info(String.format("Discovered self link pointing to %s… Following", orderLink));
+		LOG.info(String.format("Picking first order using JSONPath expression %s…", FIRST_ORDER_EXPRESSION));
+		LOG.info(String.format("Discovered self link pointing to %s… Following", orderLink));
 
 		return mvc.perform(get(orderLink.getHref())). //
 				andExpect(linkWithRelIsPresent(Link.REL_SELF)). //
@@ -215,11 +215,10 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 		LinkDiscoverer discoverer = getDiscovererFor(response);
 		Link paymentLink = discoverer.findLinkWithRel(PAYMENT_REL, content);
 
-		log.info(String.format("Discovered payment link pointing to %s…", paymentLink));
-
 		assertThat(paymentLink, not(nullValue()));
 
-		log.info("Triggering payment…");
+		LOG.info(String.format("Discovered payment link pointing to %s…", paymentLink));
+		LOG.info("Triggering payment…");
 
 		ResultActions action = mvc.perform(put(paymentLink.getHref()).content("\"1234123412341234\"").contentType(
 				MediaType.APPLICATION_JSON));
@@ -228,10 +227,10 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 				andExpect(linkWithRelIsPresent(ORDER_REL)). //
 				andReturn().getResponse();
 
-		log.info("Payment triggered…");
+		LOG.info("Payment triggered…");
 
 		// Make sure we cannot cheat and cancel the order after it has been payed
-		log.info("Faking a cancel request to make sure it's forbidden…");
+		LOG.info("Faking a cancel request to make sure it's forbidden…");
 		Link selfLink = discoverer.findLinkWithRel(Link.REL_SELF, content);
 		mvc.perform(delete(selfLink.getHref())).andExpect(status().isMethodNotAllowed());
 
@@ -265,7 +264,7 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 				headers.setIfNoneMatch(etag);
 			}
 
-			log.info("Poll state of order until receipt is ready…");
+			LOG.info("Poll state of order until receipt is ready…");
 
 			ResultActions action = mvc.perform(get(orderLink.getHref()).headers(headers));
 			pollResponse = action.andReturn().getResponse();
@@ -273,7 +272,7 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 			int status = pollResponse.getStatus();
 			etag = pollResponse.getHeader("ETag");
 
-			log.info(String.format("Received %s with ETag of %s…", status, etag));
+			LOG.info(String.format("Received %s with ETag of %s…", status, etag));
 
 			if (status == HttpStatus.OK.value()) {
 
@@ -312,8 +311,8 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 				andExpect(status().isOk()). //
 				andReturn().getResponse();
 
-		log.info("Accessing receipt, got:" + receiptResponse.getContentAsString());
-		log.info("Taking receipt…");
+		LOG.info("Accessing receipt, got:" + receiptResponse.getContentAsString());
+		LOG.info("Taking receipt…");
 
 		return mvc.perform(delete(receiptLink.getHref())). //
 				andExpect(status().isOk()). //
@@ -336,10 +335,10 @@ public class PaymentProcessIntegrationTest extends AbstractWebIntegrationTest {
 				andExpect(linkWithRelIsNotPresent(UPDATE_REL)). //
 				andExpect(linkWithRelIsNotPresent(CANCEL_REL)). //
 				andExpect(linkWithRelIsNotPresent(PAYMENT_REL)). //
-				andExpect(jsonPath("$status", is("TAKEN"))). //
+				andExpect(jsonPath("$.status", is("TAKEN"))). //
 				andReturn().getResponse();
 
-		log.info("Final order state: " + orderResponse.getContentAsString());
+		LOG.info("Final order state: " + orderResponse.getContentAsString());
 	}
 
 	/**

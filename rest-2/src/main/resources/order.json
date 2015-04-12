@@ -1,0 +1,9 @@
+{ "items" : [ {
+    "name" : "Java Chip",
+    "quantity" : 1,
+    "milk" : "SEMI",
+    "size" : "LARGE",
+    "price" : "EUR 4.20"
+  } ],
+  "location" : "TAKE_AWAY"
+}

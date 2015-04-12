@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,9 @@ package org.springsource.restbucks.training.order.web;
 import static org.hamcrest.CoreMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import net.minidev.json.parser.JSONParser;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.web.context.WebApplicationContext;
 import org.springsource.restbucks.training.AbstractWebIntegrationTest;
 
 /**
@@ -34,24 +30,12 @@ import org.springsource.restbucks.training.AbstractWebIntegrationTest;
  */
 public class OrderResourceIntegrationTest extends AbstractWebIntegrationTest {
 
-	@Autowired WebApplicationContext context;
-
-	JSONParser parser;
-
-	@Before
-	@Override
-	public void setUp() {
-
-		super.setUp();
-		parser = new JSONParser(JSONParser.MODE_PERMISSIVE);
-	}
-
 	@Test
 	public void exposesOrdersResourceViaRootResource() throws Exception {
 
 		mvc.perform(get("/")).//
 				andExpect(status().isOk()). //
 				andExpect(content().contentType(MediaTypes.HAL_JSON)). //
-				andExpect(jsonPath("$_links.orders.href", notNullValue()));
+				andExpect(jsonPath("$._links.orders.href", notNullValue()));
 	}
 }

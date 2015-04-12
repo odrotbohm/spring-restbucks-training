@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springsource.restbucks.training.payment;
+package org.springsource.restbucks.training;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.databind.Module;
 
 /**
- * Event to be thrown when an {@link Order} has been payed.
+ * Helper to expose custom Jackson modules for unit tests.
  * 
  * @author Oliver Gierke
- * @author Stéphane Nicoll
  */
-@Getter
-@EqualsAndHashCode
-@ToString
-public class OrderPaidEvent {
+public class JacksonTestUtils extends JacksonCustomizations {
 
-	private final long orderId;
-
-	/**
-	 * Creates a new {@link OrderPaidEvent}
-	 * 
-	 * @param orderId the id of the order that just has been payed
-	 */
-	public OrderPaidEvent(long orderId) {
-		this.orderId = orderId;
+	public static Set<Module> getModules() {
+		return new HashSet<>(Arrays.asList(new RestbucksModule(), new MoneyModule()));
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +15,28 @@
  */
 package org.springsource.restbucks.training.payment.web;
 
+import javax.money.MonetaryAmount;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.support.DomainClassConverter;
 import org.springframework.hateoas.EntityLinks;
-import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springsource.restbucks.training.core.MonetaryAmount;
 import org.springsource.restbucks.training.order.Order;
 import org.springsource.restbucks.training.payment.CreditCard;
 import org.springsource.restbucks.training.payment.CreditCardNumber;
 import org.springsource.restbucks.training.payment.CreditCardPayment;
-import org.springsource.restbucks.training.payment.Payment;
 import org.springsource.restbucks.training.payment.Payment.Receipt;
 import org.springsource.restbucks.training.payment.PaymentService;
 
@@ -49,27 +49,12 @@ import org.springsource.restbucks.training.payment.PaymentService;
 // TODO-02.01: Enable @Controller
 @RequestMapping("/orders/{id}")
 // TODO-02.02: Enable @ExposerResourceFor for Payment
-@ExposesResourceFor(Payment.class)
+// @ExposesResourceFor(Payment.class)
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PaymentController {
 
-	private final PaymentService paymentService;
-	private final EntityLinks entityLinks;
-
-	/**
-	 * Creates a new {@link PaymentController} using the given {@link PaymentService}.
-	 * 
-	 * @param paymentService must not be {@literal null}.
-	 * @param entityLinks must not be {@literal null}.
-	 */
-	@Autowired
-	public PaymentController(PaymentService paymentService, EntityLinks entityLinks) {
-
-		Assert.notNull(paymentService, "PaymentService must not be null!");
-		Assert.notNull(entityLinks, "EntityLinks must not be null!");
-
-		this.paymentService = paymentService;
-		this.entityLinks = entityLinks;
-	}
+	private final @NonNull PaymentService paymentService;
+	private final @NonNull EntityLinks entityLinks;
 
 	/**
 	 * Accepts a payment for an {@link Order}
@@ -108,13 +93,9 @@ public class PaymentController {
 			return new ResponseEntity<Resource<Receipt>>(HttpStatus.NOT_FOUND);
 		}
 
-		Payment payment = paymentService.getPaymentFor(order);
-
-		if (payment == null) {
-			return new ResponseEntity<Resource<Receipt>>(HttpStatus.NOT_FOUND);
-		}
-
-		return createReceiptResponse(payment.getReceipt());
+		return paymentService.getPaymentFor(order).//
+				map(payment -> createReceiptResponse(payment.getReceipt())).//
+				orElseGet(() -> new ResponseEntity<Resource<Receipt>>(HttpStatus.NOT_FOUND));
 	}
 
 	/**
@@ -130,7 +111,9 @@ public class PaymentController {
 			return new ResponseEntity<Resource<Receipt>>(HttpStatus.NOT_FOUND);
 		}
 
-		return createReceiptResponse(paymentService.takeReceiptFor(order));
+		return paymentService.takeReceiptFor(order).//
+				map(receipt -> createReceiptResponse(receipt)).//
+				orElseGet(() -> new ResponseEntity<Resource<Receipt>>(HttpStatus.METHOD_NOT_ALLOWED));
 	}
 
 	/**

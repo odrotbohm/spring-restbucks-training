@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,17 @@ package org.springsource.restbucks.training.payment;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import static org.springsource.restbucks.training.order.OrderRepositoryIntegrationTest.*;
+import static org.springsource.restbucks.training.payment.CreditCardRepositoryIntegrationTest.*;
+
+import java.util.Optional;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springsource.restbucks.training.AbstractIntegrationTest;
 import org.springsource.restbucks.training.order.Order;
-import org.springsource.restbucks.training.order.OrderRepository;
 import org.springsource.restbucks.training.order.Order.Status;
+import org.springsource.restbucks.training.order.OrderRepository;
 
 /**
  * Integration tests for {@link PaymentRepository}.
@@ -32,34 +36,31 @@ import org.springsource.restbucks.training.order.Order.Status;
  */
 public class PaymentRepositoryIntegrationTest extends AbstractIntegrationTest {
 
-	@Autowired
-	PaymentRepository repository;
-
-	@Autowired
-	CreditCardRepository creditCardRepository;
-	@Autowired
-	OrderRepository orderRepository;
+	@Autowired PaymentRepository payments;
+	@Autowired CreditCardRepository creditCards;
+	@Autowired OrderRepository orders;
 
 	@Test
 	public void savesCreditCardPayment() {
 
-		CreditCard creditCard = creditCardRepository.findOne(1L);
-		Order order = orderRepository.findOne(1L);
+		CreditCard creditCard = creditCards.save(createCreditCard());
+		Order order = orders.save(createOrder());
 
-		CreditCardPayment payment = repository.save(new CreditCardPayment(creditCard, order));
+		CreditCardPayment payment = payments.save(new CreditCardPayment(creditCard, order));
+
 		assertThat(payment.getId(), is(notNullValue()));
-		assertThat(repository.findByOrder(order), is((Payment) payment));
+		assertThat(payments.findByOrder(order), is(Optional.of(payment)));
 	}
 
 	@Test
 	public void savingCreditCardMergesChangesToOrder() {
 
-		CreditCard creditCard = creditCardRepository.findOne(1L);
-		Order order = orderRepository.findOne(1L);
+		CreditCard creditCard = creditCards.findOne(1L);
+		Order order = orders.findOne(1L);
 		order.markPaid();
 
-		CreditCardPayment payment = repository.save(new CreditCardPayment(creditCard, order));
+		CreditCardPayment payment = payments.save(new CreditCardPayment(creditCard, order));
 		assertThat(payment.getId(), is(notNullValue()));
-		assertThat(orderRepository.findOne(1L).getStatus(), is(Status.PAID));
+		assertThat(orders.findOne(1L).getStatus(), is(Status.PAID));
 	}
 }

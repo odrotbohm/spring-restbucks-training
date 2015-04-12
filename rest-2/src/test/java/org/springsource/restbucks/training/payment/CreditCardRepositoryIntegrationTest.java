@@ -18,8 +18,10 @@ package org.springsource.restbucks.training.payment;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import org.joda.time.Months;
-import org.joda.time.Years;
+import java.time.Month;
+import java.time.Year;
+import java.util.Optional;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springsource.restbucks.training.AbstractIntegrationTest;
@@ -31,16 +33,22 @@ import org.springsource.restbucks.training.AbstractIntegrationTest;
  */
 public class CreditCardRepositoryIntegrationTest extends AbstractIntegrationTest {
 
-	@Autowired
-	CreditCardRepository repository;
+	@Autowired CreditCardRepository repository;
 
 	@Test
 	public void createsCreditCard() {
 
-		CreditCardNumber number = new CreditCardNumber("4321432143214321");
-		CreditCard creditCard = new CreditCard(number, "Oliver Gierke", Months.TWELVE, Years.years(2014));
+		CreditCard creditCard = repository.save(createCreditCard());
 
-		creditCard = repository.save(creditCard);
-		assertThat(repository.findByNumber(number), is(creditCard));
+		Optional<CreditCard> result = repository.findByNumber(creditCard.getNumber());
+
+		assertThat(result.isPresent(), is(true));
+		assertThat(result.get(), is(creditCard));
+	}
+
+	public static CreditCard createCreditCard() {
+
+		CreditCardNumber number = new CreditCardNumber("4321432143214321");
+		return new CreditCard(number, "Oliver Gierke", Month.DECEMBER, Year.of(2020));
 	}
 }

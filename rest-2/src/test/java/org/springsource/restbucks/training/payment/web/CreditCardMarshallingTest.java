@@ -18,48 +18,63 @@ package org.springsource.restbucks.training.payment.web;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import org.joda.time.LocalDate;
-import org.joda.time.Months;
-import org.joda.time.Years;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.springsource.restbucks.training.JacksonTestUtils;
 import org.springsource.restbucks.training.payment.CreditCard;
 import org.springsource.restbucks.training.payment.CreditCardNumber;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
 
 /**
  * @author Oliver Gierke
  */
 public class CreditCardMarshallingTest {
 
-	static final String REFERENCE = "{\"number\":\"1234123412341234\",\"expirationDate\":[2013,11,1],\"cardHolderName\":\"Oliver Gierke\"}";
+	static final String REFERENCE = "{\"number\":\"1234123412341234\",\"cardHolderName\":\"Oliver Gierke\",\"expirationDate\":[2013,11,1]}";
 
 	ObjectMapper mapper = new ObjectMapper();
 
 	@Before
 	public void setUp() {
-		mapper.registerModule(new JodaModule());
+
+		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		mapper.registerModule(new JSR310Module());
+		mapper.registerModules(JacksonTestUtils.getModules());
 	}
 
 	@Test
 	public void serializesCreditCardWithOutIdAndWithAppropriateMontshAndYears() throws Exception {
 
-		CreditCard creditCard = new CreditCard(new CreditCardNumber("1234123412341234"), "Oliver Gierke", Months.ELEVEN,
-				Years.years(2013));
-		assertThat(mapper.writeValueAsString(creditCard), is(REFERENCE));
+		CreditCard creditCard = new CreditCard(new CreditCardNumber("1234123412341234"), "Oliver Gierke", Month.NOVEMBER,
+				Year.of(2013));
+
+		String result = mapper.writeValueAsString(creditCard);
+
+		assertThat(JsonPath.<String> read(result, "$.number"), is("1234123412341234"));
+		assertThat(JsonPath.<String> read(result, "$.cardHolderName"), is("Oliver Gierke"));
+		assertThat(JsonPath.<String> read(result, "$.expirationDate"), is("2013-11-01"));
+
+		Configuration configuration = Configuration.defaultConfiguration().addOptions(Option.SUPPRESS_EXCEPTIONS);
+		assertThat(JsonPath.compile("$.valid").read(result, configuration), is(nullValue()));
 	}
 
 	@Test
-	@Ignore
 	public void deserializesCreditCardWithOutIdAndWithAppropriateMontshAndYears() throws Exception {
 
 		CreditCard creditCard = mapper.readValue(REFERENCE, CreditCard.class);
 
 		assertThat(creditCard.getId(), is(nullValue()));
-		assertThat(creditCard.getExpirationDate(), is(new LocalDate(2013, 11, 1)));
+		assertThat(creditCard.getExpirationDate(), is(LocalDate.of(2013, 11, 1)));
 		assertThat(creditCard.getNumber(), is(notNullValue()));
 	}
 }
