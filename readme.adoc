@@ -1,0 +1,5 @@
+= Spring RESTBucks Training
+
+Sample code for a 4-step training to build http://github.com/olivergierke/spring-restbucks[Spring Data RESTBucks].
+
+image:https://travis-ci.org/olivergierke/spring-restbucks-training.svg?branch=master["Build Status", link="https://travis-ci.org/olivergierke/spring-restbucks-training"]
