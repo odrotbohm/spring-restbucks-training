@@ -17,26 +17,24 @@ package org.springsource.restbucks.training.order;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
-import static org.springsource.restbucks.training.core.MonetaryAmount.*;
 import static org.springsource.restbucks.training.order.Order.Status.*;
 
 import java.util.List;
 
 import org.hamcrest.Matchers;
+import org.javamoney.moneta.Money;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springsource.restbucks.training.AbstractIntegrationTest;
-import org.springsource.restbucks.training.core.MonetaryAmount;
 
 /**
  * Integration tests for Spring Data based {@link OrderRepository}.
- * 
+ *
  * @author Oliver Gierke
  */
 public class OrderRepositoryIntegrationTest extends AbstractIntegrationTest {
 
-	@Autowired
-	OrderRepository repository;
+	@Autowired OrderRepository repository;
 
 	@Test
 	public void findsAllOrders() {
@@ -48,7 +46,7 @@ public class OrderRepositoryIntegrationTest extends AbstractIntegrationTest {
 	@Test
 	public void createsNewOrder() {
 
-		Order order = repository.save(new Order(new Item("English breakfast", new MonetaryAmount(EURO, 2.70))));
+		Order order = repository.save(new Order(new Item("English breakfast", Money.of(2.70, "EUR"))));
 
 		Iterable<Order> result = repository.findAll();
 		assertThat(result, is(Matchers.<Order> iterableWithSize(3)));
@@ -79,6 +77,9 @@ public class OrderRepositoryIntegrationTest extends AbstractIntegrationTest {
 	@Test
 	public void findsOrdersByPredicate() {
 
+		// takeaway
+		// paymentexpected
+		// expect 2
 	}
 
 	// TODO-03.02: Implement test case for custom implementation

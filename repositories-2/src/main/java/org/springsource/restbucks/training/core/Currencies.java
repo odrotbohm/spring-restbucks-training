@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2015 the original author or authors.
+ * Copyright 2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springsource.restbucks.training;
+package org.springsource.restbucks.training.core;
 
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
+import javax.money.CurrencyUnit;
+import javax.money.MonetaryCurrencies;
 
 /**
- * Base class to implement transactional integration tests using the root {@link Application}.
+ * Interface to contain {@link CurrencyUnit} constants.
  * 
  * @author Oliver Gierke
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@Transactional
-public abstract class AbstractIntegrationTest {
+public interface Currencies {
 
+	public static final CurrencyUnit EURO = MonetaryCurrencies.getCurrency("EUR");
 }
