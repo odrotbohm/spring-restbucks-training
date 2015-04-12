@@ -21,12 +21,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Base class to implement transactional integration tests using the root {@link ApplicationConfig}.
+ * Base class to implement transactional integration tests using the root {@link Application}.
  * 
  * @author Oliver Gierke
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ApplicationConfig.class)
+@SpringApplicationConfiguration(classes = Application.class)
 @Transactional
 public abstract class AbstractIntegrationTest {
 

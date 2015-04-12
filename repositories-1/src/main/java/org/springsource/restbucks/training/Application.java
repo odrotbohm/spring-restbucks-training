@@ -26,6 +26,6 @@ import org.springframework.context.annotation.Configuration;
 // TODO-01.00: ---- Basic infrastructure ----
 // TODO-01.01: Enable Spring Boot's auto-configuration
 // TODO-03.01: Enable component scanning to pick up OrderInitializer
-class ApplicationConfig {
+class Application {
 
 }
