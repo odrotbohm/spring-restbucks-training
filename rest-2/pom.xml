@@ -14,12 +14,6 @@
 	<artifactId>rest-2</artifactId>
 	<name>Spring Data REST - Advanced</name>
 	
-	<properties>
-		<spring.version>4.2.0.BUILD-SNAPSHOT</spring.version>
-		<json-path.version>1.2.0</json-path.version>
-	</properties>
-
-
 	<dependencies>
 
 		<dependency>
@@ -38,5 +32,14 @@
 		</dependency>
 		
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>
